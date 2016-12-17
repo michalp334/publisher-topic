@@ -15,25 +15,15 @@ lazy val helloworldImpl = project("helloworld-impl")
     version := "1.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslPersistenceCassandra,
-      lagomJavadslTestKit
+      lagomJavadslTestKit,
+      lagomJavadslBroker
+
+//        libraryDependencies += "com.lightbend.lagom" % "lagom-javadsl-broker_2.11" % "1.2.1"
     )
   )
   .settings(lagomForkedTestSettings: _*)
   .dependsOn(helloworldApi)
 
-lazy val hellostreamApi = project("hellostream-api")
-  .settings(version := "1.0-SNAPSHOT")
-  .settings(
-    libraryDependencies += lagomJavadslApi
-  )
-
-lazy val hellostreamImpl = project("hellostream-impl")
-  .settings(version := "1.0-SNAPSHOT")
-  .enablePlugins(LagomJava)
-  .dependsOn(hellostreamApi, helloworldApi)
-  .settings(
-    libraryDependencies += lagomJavadslTestKit
-  )
 
 def project(id: String) = Project(id, base = file(id))
   .settings(eclipseSettings: _*)
@@ -46,16 +36,3 @@ lazy val jacksonParameterNamesJavacSettings = Seq(
   javacOptions in compile += "-parameters"
 )
 
-// Configuration of sbteclipse
-// Needed for importing the project into Eclipse
-lazy val eclipseSettings = Seq(
-  EclipseKeys.projectFlavor := EclipseProjectFlavor.Java,
-  EclipseKeys.withBundledScalaContainers := false,
-  EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource,
-  EclipseKeys.eclipseOutput := Some(".target"),
-  EclipseKeys.withSource := true,
-  EclipseKeys.withJavadoc := true,
-  // avoid some scala specific source directories
-  unmanagedSourceDirectories in Compile := Seq((javaSource in Compile).value),
-  unmanagedSourceDirectories in Test := Seq((javaSource in Test).value)
-)
